@@ -1,4 +1,8 @@
 mod gpt_api;
+mod data_loader;
+mod offline_algo;
+mod offline_emotions;
+mod scanner_mode;
 
 fn main() {
     // 에러를 깔끔하게 처리하기 위해 run()으로 분리
