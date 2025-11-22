@@ -1,7 +1,7 @@
 mod gpt_api;
 mod data_loader;
 mod offline_algo;
-mod offline_emotions;
+mod offline_emotion;
 mod scanner_mode;
 
 fn main() {
