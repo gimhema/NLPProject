@@ -47,3 +47,34 @@ fn main() {
 }
 
 */
+
+/*
+
+fn main() {
+    // 카테고리 엔진 초기화 + 학습
+    let mut cat_engine = OfflineCategoryEngine::new();
+    let _ = cat_engine.train_from_tsv("data/category_training.tsv", 5, 20);
+
+    // 감정 엔진 초기화 (규칙 기반이라 학습 불필요)
+    let sent_engine = OfflineSentimentEngine::new();
+
+    let msg = "강화 실패해서 골드가 너무 없어서 힘들어";
+
+    let cat_result = cat_engine.analyze(msg);
+    let sent_result = sent_engine.analyze(msg);
+    let top_sent = sent_engine.top_sentiment(msg);
+
+    println!("input: {}", msg);
+
+    println!("== Category scores ==");
+    for (cat, score) in cat_result {
+        println!("{:?}: score={:.3}", cat, score);
+    }
+
+    println!("== Sentiment scores ==");
+    for (s, score) in sent_result {
+        println!("{:?}: score={}", s, score);
+    }
+    println!("Top sentiment: {:?}", top_sent);
+}
+*/
