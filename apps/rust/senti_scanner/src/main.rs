@@ -3,6 +3,8 @@ mod gpt_api;
 mod offline_algo;
 mod offline_emotion;
 mod scanner_mode;
+mod net_event_listner;
+mod net_tcp;
 
 use offline_emotion::OfflineCategoryEngine;
 use offline_algo::Category;
