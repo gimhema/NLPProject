@@ -1,6 +1,6 @@
 from typing import Any, Dict
 import json
-
+import numpy as np
 from sklearn.svm import LinearSVC
 
 
@@ -34,3 +34,16 @@ def save_svm_model(model: LinearSVC, path: str):
     data = svm_to_export_dict(model)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def load_svm_model(path: str) -> LinearSVC:
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    model = LinearSVC()
+    model.classes_ = np.array(data["classes"])
+    model.coef_ = np.array(data["coef"])
+    model.intercept_ = np.array(data["intercept"])
+    model.n_features_in_ = model.coef_.shape[1]
+
+    return model
