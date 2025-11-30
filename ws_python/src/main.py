@@ -66,18 +66,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def build_toy_dataset() -> Tuple[List[str], List[str]]:
-    pairs = [
-        ("Capital", "나는 빌게이츠처럼 많은 돈을 벌고싶어"),
-        ("Capital", "와 엔비디아 주식 오른거봐라 젠슨황 돈 많이 벌었겠네"),
-        ("Battle", "최종 레이드 던전에 도전할수있을만큼 강해지고싶어"),
-        ("Battle", "새로나온 인던에 도전하기엔 내 스펙이 많이 모잘라"),
-        ("Pet", "이번에 출시된 드래곤 펫의 디자인이 꽤 귀엽군"),
-        ("Capital", "베조스 아마존 주식 대박 ㄷㄷ"),
-    ]
-    labels = [c for (c, _) in pairs]
-    texts = [t for (_, t) in pairs]
-    return labels, texts
+# def build_toy_dataset() -> Tuple[List[str], List[str]]:
+#     pairs = [
+#         ("Capital", "나는 빌게이츠처럼 많은 돈을 벌고싶어"),
+#         ("Capital", "와 엔비디아 주식 오른거봐라 젠슨황 돈 많이 벌었겠네"),
+#         ("Battle", "최종 레이드 던전에 도전할수있을만큼 강해지고싶어"),
+#         ("Battle", "새로나온 인던에 도전하기엔 내 스펙이 많이 모잘라"),
+#         ("Pet", "이번에 출시된 드래곤 펫의 디자인이 꽤 귀엽군"),
+#         ("Capital", "베조스 아마존 주식 대박 ㄷㄷ"),
+#     ]
+#     labels = [c for (c, _) in pairs]
+#     texts = [t for (_, t) in pairs]
+#     return labels, texts
 
 
 # ---------------------------------------------------------
@@ -119,10 +119,10 @@ def main():
         labels, texts = load_dataset_csv(args.data)
         if not labels:
             print("[WARN] Dataset is empty, fallback to toy dataset.")
-            labels, texts = build_toy_dataset()
+            # labels, texts = build_toy_dataset()
     else:
         print("[INFO] No dataset path given. Using toy dataset.")
-        labels, texts = build_toy_dataset()
+        # labels, texts = build_toy_dataset()
 
     # 2) TF-IDF 학습
     config = TfidfConfig(ngram_min=1, ngram_max=args.ngram_max)
