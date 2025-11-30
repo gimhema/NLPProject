@@ -4,21 +4,27 @@ import os
 from typing import List, Tuple
 
 from tf_idf import TfidfTrainer, TfidfConfig
-from logistic_reg import train_logistic_regression, save_logistic_model
-from svm import train_linear_svm, save_svm_model
+from logistic_reg import (
+    train_logistic_regression,
+    save_logistic_model,
+    load_logistic_model,
+)
+from svm import (
+    train_linear_svm,
+    save_svm_model,
+    load_svm_model,
+)
 
 
 def load_dataset_csv(path: str) -> Tuple[List[str], List[str]]:
     """
-    CSV 포맷: category,text
-    (헤더 유무는 옵션으로 둘 수 있는데, 여기서는 첫 줄을 헤더로 가정)
+    CSV 포맷: category,text (첫 줄은 헤더)
     """
     labels: List[str] = []
     texts: List[str] = []
 
     with open(path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        # 헤더: category, text
         for row in reader:
             label = row.get("category")
             text = row.get("text")
@@ -61,9 +67,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
 
 def build_toy_dataset() -> Tuple[List[str], List[str]]:
-    """
-    사용자가 예시로 준 작은 데이터셋 (CSV 없을 때 fallback)
-    """
     pairs = [
         ("Capital", "나는 빌게이츠처럼 많은 돈을 벌고싶어"),
         ("Capital", "와 엔비디아 주식 오른거봐라 젠슨황 돈 많이 벌었겠네"),
@@ -77,6 +80,36 @@ def build_toy_dataset() -> Tuple[List[str], List[str]]:
     return labels, texts
 
 
+# ---------------------------------------------------------
+#  추가된 테스트 기능
+# ---------------------------------------------------------
+def test_classifier(tfidf_path: str, model_path: str, algo: str, test_texts: List[str]):
+    """
+    학습된 TF-IDF / 모델을 로드해서 문장을 테스트한다.
+    """
+    print("\n[TEST] Running classifier tests...")
+
+    # TF-IDF 로드
+    tfidf_trainer = TfidfTrainer(TfidfConfig())
+    tfidf_trainer.load_json(tfidf_path)
+
+    # 모델 로드
+    if algo == "logreg":
+        model = load_logistic_model(model_path)
+    else:
+        model = load_svm_model(model_path)
+
+    # 각 문장 테스트
+    for text in test_texts:
+        vec = tfidf_trainer.transform([text])
+        pred = model.predict(vec)[0]
+        print(f"  [INPUT] {text}")
+        print(f"  --> Predicted Category: {pred}\n")
+
+
+# ---------------------------------------------------------
+#  main
+# ---------------------------------------------------------
 def main():
     parser = build_arg_parser()
     args = parser.parse_args()
@@ -92,27 +125,27 @@ def main():
         labels, texts = build_toy_dataset()
 
     # 2) TF-IDF 학습
-    config = TfidfConfig(
-        ngram_min=1,
-        ngram_max=args.ngram_max,
-    )
+    config = TfidfConfig(ngram_min=1, ngram_max=args.ngram_max)
     tfidf_trainer = TfidfTrainer(config)
     X = tfidf_trainer.fit_transform(texts)
 
-    # 3) 알고리즘 선택 & 학습
+    # 출력 폴더 생성
     os.makedirs(args.out_dir, exist_ok=True)
     tfidf_path = os.path.join(args.out_dir, "tfidf.json")
 
+    # TF-IDF 저장
     print(f"[INFO] Training TF-IDF (ngram_max={args.ngram_max}) ...")
     tfidf_trainer.save_json(tfidf_path)
     print(f"[INFO] Saved TF-IDF model to {tfidf_path}")
 
+    # 3) 알고리즘 선택 & 학습
     if args.algo == "logreg":
         print("[INFO] Training Logistic Regression ...")
         model = train_logistic_regression(X, labels)
         model_path = os.path.join(args.out_dir, "logistic_regression.json")
         save_logistic_model(model, model_path)
         print(f"[INFO] Saved Logistic Regression model to {model_path}")
+
     else:
         print("[INFO] Training Linear SVM ...")
         model = train_linear_svm(X, labels)
@@ -120,7 +153,18 @@ def main():
         save_svm_model(model, model_path)
         print(f"[INFO] Saved Linear SVM model to {model_path}")
 
-    print("[INFO] Done.")
+    print("[INFO] Training Done.")
+
+    # -----------------------------------------------------
+    #  학습 완료 후 테스트 수행
+    # -----------------------------------------------------
+    test_samples = [
+        "이번에 새로나온 펫 너무 귀엽다",
+        "주식으로 큰 돈 벌고 싶다",
+        "내 캐릭터 스펙이 너무 낮아서 레이드 못가겠어",
+    ]
+
+    test_classifier(tfidf_path, model_path, args.algo, test_samples)
 
 
 if __name__ == "__main__":
