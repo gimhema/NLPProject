@@ -15,6 +15,11 @@ from svm import (
     load_svm_model,
 )
 
+# from plot_utils import plot_class_distribution
+from sklearn.decomposition import PCA
+import numpy as np
+from plot_utils import plot_svm_decision_boundary
+
 
 def load_dataset_csv(path: str) -> Tuple[List[str], List[str]]:
     """
@@ -66,23 +71,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
-# def build_toy_dataset() -> Tuple[List[str], List[str]]:
-#     pairs = [
-#         ("Capital", "나는 빌게이츠처럼 많은 돈을 벌고싶어"),
-#         ("Capital", "와 엔비디아 주식 오른거봐라 젠슨황 돈 많이 벌었겠네"),
-#         ("Battle", "최종 레이드 던전에 도전할수있을만큼 강해지고싶어"),
-#         ("Battle", "새로나온 인던에 도전하기엔 내 스펙이 많이 모잘라"),
-#         ("Pet", "이번에 출시된 드래곤 펫의 디자인이 꽤 귀엽군"),
-#         ("Capital", "베조스 아마존 주식 대박 ㄷㄷ"),
-#     ]
-#     labels = [c for (c, _) in pairs]
-#     texts = [t for (_, t) in pairs]
-#     return labels, texts
-
-
-# ---------------------------------------------------------
-#  추가된 테스트 기능
-# ---------------------------------------------------------
 def test_classifier(tfidf_path: str, model_path: str, algo: str, test_texts: List[str]):
     """
     학습된 TF-IDF / 모델을 로드해서 문장을 테스트한다.
@@ -155,16 +143,14 @@ def main():
 
     print("[INFO] Training Done.")
 
-    # -----------------------------------------------------
-    #  학습 완료 후 테스트 수행
-    # -----------------------------------------------------
     test_samples = [
-        "이번에 새로나온 펫 너무 귀엽다",
-        "주식으로 큰 돈 벌고 싶다",
-        "내 캐릭터 스펙이 너무 낮아서 레이드 못가겠어",
+        ""
     ]
 
     test_classifier(tfidf_path, model_path, args.algo, test_samples)
+
+    X_2d = PCA(n_components=2).fit_transform(X.toarray())
+    plot_svm_decision_boundary(X_2d, labels, model)
 
 
 if __name__ == "__main__":
