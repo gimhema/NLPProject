@@ -6,6 +6,7 @@ scikit-learn
 numpy
 scipy
 matplotlib
+kiwipiepy
 ```
 
 ### Install command
@@ -13,4 +14,5 @@ matplotlib
 ```
 conda install -c conda-forge scikit-learn numpy scipy
 conda install matplotlib
+pip install kiwipiepy
 ```
